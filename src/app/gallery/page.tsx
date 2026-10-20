@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import MemoryGrid from "@/components/MemoryGrid";
 import { getMemories } from "@/lib/data";
 
