@@ -1,7 +1,7 @@
+export const revalidate = 0;
 import WishesView from "@/components/WishesView";
 import { getWishes } from "@/lib/data";
 
-export const revalidate = 0;
 
 export default async function WishesPage() {
   let wishes = [];
