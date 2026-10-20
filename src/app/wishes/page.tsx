@@ -1,20 +1,20 @@
-export const revalidate = 0;
-import WishesView from "@/components/WishesView";
+import * as WishesViewModule from "@/components/WishesView";
 import { getWishes } from "@/lib/data";
 
-import dynamic from "next/dynamic"
+export const dynamic = "force-dynamic";
+
+const WishesView =
+  (WishesViewModule as any).default ||
+  (WishesViewModule as any).WishesView;
+
 export default async function WishesPage() {
-  let wishes = [];
+  let wishes: any[] = [];
+
   try {
     wishes = await getWishes();
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("Failed to load wishes:", error);
   }
 
-  return (
-    <main className="min-h-screen py-12 px-4 max-w-4xl mx-auto">
-      <h1 className="text-4xl font-serif text-[#2d2422] mb-8 text-center">Книга пожеланий</h1>
-      <WishesView initialWishes={wishes} />
-    </main>
-  );
+  return <WishesView wishes={wishes} initialWishes={wishes} />;
 }
