@@ -1,21 +1,38 @@
-export const revalidate = 0;
-import MemoryGrid from "@/components/MemoryGrid";
-import { getMemories } from "@/lib/data";
+import * as GalleryViewModule from "@/components/GalleryView";
+import * as dataModule from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
+const GalleryView =
+  (GalleryViewModule as any).default ||
+  (GalleryViewModule as any).GalleryView;
+
 export default async function GalleryPage() {
-  let memories = [];
+  let memories: any[] = [];
+  let albums: any[] = [];
+
   try {
-    memories = await getMemories();
-  } catch (e) {
-    console.error(e);
+    if (typeof dataModule.getMemories === "function") {
+      memories = await dataModule.getMemories();
+    }
+  } catch (error) {
+    console.error("Failed to load memories:", error);
+  }
+
+  try {
+    if (typeof (dataModule as any).getAlbums === "function") {
+      albums = await (dataModule as any).getAlbums();
+    }
+  } catch (error) {
+    console.error("Failed to load albums:", error);
   }
 
   return (
-    <main className="min-h-screen py-12 px-4 max-w-6xl mx-auto">
-      <h1 className="text-4xl font-serif text-[#2d2422] mb-8 text-center">Галерея воспоминаний</h1>
-      <MemoryGrid initialMemories={memories} />
-    </main>
+    <GalleryView
+      memories={memories}
+      initialMemories={memories}
+      albums={albums}
+      initialAlbums={albums}
+    />
   );
 }
