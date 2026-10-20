@@ -1,113 +1,66 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
-interface Flake {
+interface Petal {
+  id: number;
   x: number;
-  y: number;
-  r: number;
-  speed: number;
-  sway: number;
-  swaySpeed: number;
-  phase: number;
+  size: number;
+  duration: number;
+  delay: number;
+  rotate: number;
   opacity: number;
 }
 
-export default function Snowfall() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+export default function Petalfall() {
+  const [petals, setPetals] = useState<Petal[]>([]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let raf = 0;
-    let running = true;
-    let width = 0;
-    let height = 0;
-    let flakes: Flake[] = [];
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    const spawn = (initial: boolean): Flake => ({
-      x: Math.random() * width,
-      y: initial ? Math.random() * height : -8,
-      r: 0.8 + Math.random() * 2.4,
-      speed: 0.35 + Math.random() * 0.9,
-      sway: 12 + Math.random() * 32,
-      swaySpeed: 0.3 + Math.random() * 0.7,
-      phase: Math.random() * Math.PI * 2,
-      opacity: 0.35 + Math.random() * 0.55,
-    });
-
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const target = Math.min(160, Math.floor((width * height) / 14000));
-      flakes = Array.from({ length: target }, () => spawn(true));
-    };
-
-    let last = performance.now();
-    const tick = (now: number) => {
-      if (!running) return;
-      const dt = Math.min((now - last) / 16.7, 3);
-      last = now;
-      ctx.clearRect(0, 0, width, height);
-      const t = now / 1000;
-
-      for (const f of flakes) {
-        f.y += f.speed * dt;
-        f.phase += f.swaySpeed * dt * 0.02;
-        if (f.y > height + 8) {
-          Object.assign(f, spawn(false));
-        }
-        const x = f.x + Math.sin(t * f.swaySpeed + f.phase) * f.sway;
-        const tw = 0.75 + 0.25 * Math.sin(t * 2 + f.phase * 3);
-        ctx.beginPath();
-        ctx.arc(x, f.y, f.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(235, 243, 255, ${(f.opacity * tw).toFixed(3)})`;
-        ctx.shadowColor = "rgba(200, 225, 255, 0.8)";
-        ctx.shadowBlur = f.r * 2.2;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    const onVisibility = () => {
-      running = !document.hidden;
-      if (running) {
-        last = performance.now();
-        raf = requestAnimationFrame(tick);
-      } else {
-        cancelAnimationFrame(raf);
-      }
-    };
-
-    resize();
-    raf = requestAnimationFrame(tick);
-    window.addEventListener("resize", resize);
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      running = false;
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
+    const items: Petal[] = Array.from({ length: 25 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      size: Math.random() * 12 + 10,
+      duration: Math.random() * 8 + 7,
+      delay: Math.random() * 5,
+      rotate: Math.random() * 360,
+      opacity: Math.random() * 0.5 + 0.4,
+    }));
+    setPetals(items);
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-[60]"
-    />
+    <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+      {petals.map((p) => (
+        <div
+          key={p.id}
+          className="absolute top-[-20px] transition-all"
+          style={{
+            left: `${p.x}%`,
+            width: `${p.size}px`,
+            height: `${p.size * 1.3}px`,
+            opacity: p.opacity,
+            animation: `fall ${p.duration}s linear infinite`,
+            animationDelay: `${p.delay}s`,
+          }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="#E29D90"
+            className="w-full h-full drop-shadow-sm"
+            style={{ transform: `rotate(${p.rotate}deg)` }}
+          >
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </div>
+      ))}
+
+      <style jsx>{`
+        @keyframes fall {
+          0% { transform: translateY(0) rotate(0deg) translateX(0); }
+          50% { transform: translateY(50vh) rotate(180deg) translateX(25px); }
+          100% { transform: translateY(105vh) rotate(360deg) translateX(-10px); }
+        }
+      `}</style>
+    </div>
   );
 }
