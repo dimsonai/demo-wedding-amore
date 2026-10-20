@@ -6,10 +6,19 @@ import { getMemories, getWishes } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [memories, wishes] = await Promise.all([
-    getMemories({ limit: 6 }),
-    getWishes(),
-  ]);
+  let memories = [];
+  let wishes = [];
+
+  try {
+    const [mRes, wRes] = await Promise.all([
+      getMemories({ limit: 6 }),
+      getWishes(),
+    ]);
+    memories = mRes || [];
+    wishes = wRes || [];
+  } catch (e) {
+    console.error("Database connection error during page load:", e);
+  }
 
   return (
     <main className="min-h-screen relative pb-20">
