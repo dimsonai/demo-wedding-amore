@@ -2,7 +2,7 @@ export const revalidate = 0;
 import WishesView from "@/components/WishesView";
 import { getWishes } from "@/lib/data";
 
-
+import dynamic from "next/dynamic"
 export default async function WishesPage() {
   let wishes = [];
   try {
