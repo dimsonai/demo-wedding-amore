@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart, QrCode, X, Download, Sparkles, Image, MessageCircle, Home } from "lucide-react";
 
-export const Navbar = () => {
+export default function Navbar() {
   const [isQrOpen, setIsQrOpen] = useState(false);
   const siteUrl = "https://demo-wedding-amore.netlify.app";
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(siteUrl)}&color=c88a78`;
@@ -121,4 +121,7 @@ export const Navbar = () => {
       )}
     </>
   );
-};
+}
+
+// Поддержка обоих вариантов экспорта для гарантии сборки
+export { Navbar };
