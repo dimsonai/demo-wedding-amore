@@ -1,123 +1,116 @@
 export const revalidate = 0;
-import Link from "next/link";
-import Petalfall from "@/components/Snowfall";
-import Countdown from "@/components/Countdown";
-import { getMemories, getWishes } from "@/lib/data";
 
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { Camera, MapPin, Clock, ArrowRight, Heart, Gift, Mail, Car } from "lucide-react";
+import * as CountdownModule from "@/components/Countdown";
+
+const Countdown = (CountdownModule as any).default || (CountdownModule as any).Countdown;
 
 export default async function HomePage() {
-  let memories = [];
-  let wishes = [];
-
-  try {
-    const [mRes, wRes] = await Promise.all([
-      getMemories({ limit: 6 }),
-      getWishes(),
-    ]);
-    memories = mRes || [];
-    wishes = wRes || [];
-  } catch (e) {
-    console.error("Database connection error during page load:", e);
-  }
-
   return (
-    <main className="min-h-screen relative pb-20">
-      <Petalfall />
-
-      {/* ГЛАВНЫЙ СВАДЕБНЫЙ БАННЕР */}
-      <section className="relative pt-20 pb-16 px-4 text-center max-w-4xl mx-auto animate-fade-in">
-        <span className="text-xs uppercase tracking-[0.3em] text-[#a6553a] font-semibold bg-[#f4e8e1] px-4 py-1.5 rounded-full inline-block mb-4">
-          Приглашение на свадьбу
-        </span>
-        
-        <h1 className="text-5xl sm:text-7xl font-serif text-[#2d2422] mb-4 tracking-tight">
-          Анна <span className="text-[#c88a78] font-sans font-light">&amp;</span> Дмитрий
+    <main className="min-h-screen pb-20">
+      
+      {/* Шапка */}
+      <section className="relative pt-20 pb-16 px-4 overflow-hidden text-center">
+        <div className="inline-block p-4 rounded-full bg-[#f4e8e1] mb-6 animate-pulse">
+          <Heart className="w-8 h-8 text-[#c88a78] fill-[#c88a78]/20" />
+        </div>
+        <h1 className="text-5xl md:text-7xl font-serif text-gray-800 mb-4 tracking-tight">
+          Анна & Дмитрий
         </h1>
-        
-        <p className="text-lg text-[#6e5852] max-w-lg mx-auto font-light mb-8 italic">
-          «Мы будем счастливы разделить с вами самый главный день нашей жизни!»
+        <p className="text-lg md:text-xl text-gray-500 uppercase tracking-widest font-medium mb-8">
+          15 Июля 2027 <span className="mx-2">•</span> Балаклава, Крым
         </p>
+        
+        {/* Новый читаемый таймер */}
+        {Countdown && <Countdown targetDate="2027-07-15T15:00:00" />}
+      </section>
 
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-[#52413c] mb-10 border-y border-[#f0e2da] py-4 max-w-md mx-auto">
-          <div>
-            <span className="block font-bold text-[#c88a78]">ДАТА</span>
-            15 Июля 2027
-          </div>
-          <div className="border-r border-[#f0e2da]" />
-          <div>
-            <span className="block font-bold text-[#c88a78]">ЛОКАЦИЯ</span>
-            Балаклава, Крым
-          </div>
-        </div>
-
-        <div className="mb-10">
-          <p className="text-xs uppercase tracking-widest text-[#8c6f66] mb-3">До торжества осталось:</p>
-          <Countdown targetDate="2027-07-15T15:00:00" />
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4">
-          <a
-            href="#upload"
-            className="bg-[#c88a78] hover:bg-[#b57763] text-white px-8 py-3.5 rounded-full font-medium shadow-lg hover:shadow-xl transition-all text-sm tracking-wide"
-          >
-            📸 Загрузить фото с банкета
-          </a>
-          <a
-            href="#wishes"
-            className="bg-white border border-[#e8d5cc] hover:bg-[#fcf7f4] text-[#a6553a] px-8 py-3.5 rounded-full font-medium transition-all text-sm"
-          >
-            💌 Оставить пожелание
-          </a>
+      {/* НОВЫЙ БЛОК: Пожелания по подаркам (Конверты) */}
+      <section className="max-w-3xl mx-auto px-4 mb-20 text-center">
+        <h2 className="text-3xl font-serif text-gray-800 mb-8 flex items-center justify-center gap-3">
+          <Gift className="w-8 h-8 text-[#c88a78]" />
+          Подарки
+        </h2>
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#f4e8e1] relative overflow-hidden">
+          <Mail className="w-12 h-12 text-[#c88a78] mx-auto mb-4 opacity-80" />
+          <h3 className="text-xl font-bold text-gray-800 mb-3">Дорогие гости!</h3>
+          <p className="text-gray-600 text-lg leading-relaxed font-medium">
+            Главный подарок для нас — это ваше присутствие и искренние эмоции в наш особенный день. 
+            Пожалуйста, не ломайте голову над материальными подарками: мы будем очень благодарны, 
+            если ваш вклад в бюджет нашей молодой семьи <span className="text-[#c88a78] font-bold">поместится в конверт</span>.
+          </p>
         </div>
       </section>
 
-      {/* ДРЕСС-КОД */}
-      <section className="max-w-3xl mx-auto px-4 my-12 text-center">
-        <div className="bg-white p-8 rounded-2xl border border-[#f0e2da] shadow-sm">
-          <h2 className="text-2xl font-serif text-[#2d2422] mb-3">Палитра дресс-кода</h2>
-          <p className="text-sm text-[#7a645d] mb-6">Будем признательны, если при выборе нарядов вы придержитесь этих оттенков:</p>
-          <div className="flex justify-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#E8D5CC] border border-black/5 shadow-inner" title="Пудровый" />
-            <div className="w-10 h-10 rounded-full bg-[#C88A78] border border-black/5 shadow-inner" title="Терракот" />
-            <div className="w-10 h-10 rounded-full bg-[#D4AF37] border border-black/5 shadow-inner" title="Золото" />
-            <div className="w-10 h-10 rounded-full bg-[#F5E6D3] border border-black/5 shadow-inner" title="Шампань" />
-            <div className="w-10 h-10 rounded-full bg-[#4A3B32] border border-black/5 shadow-inner" title="Шоколад" />
-          </div>
-        </div>
-      </section>
-
-      {/* ГАЛЕРЕЯ */}
-      <section className="max-w-5xl mx-auto px-4 my-16">
-        <div className="flex justify-between items-end mb-8 border-b border-[#f0e2da] pb-4">
-          <div>
-            <h2 className="text-3xl font-serif text-[#2d2422]">Живая фотолента</h2>
-            <p className="text-sm text-[#8c6f66]">Фото и видео от наших любимых гостей</p>
-          </div>
-          <Link href="/gallery" className="text-sm font-medium text-[#c88a78] hover:underline">
-            Смотреть все →
-          </Link>
-        </div>
-
-        {memories.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-[#e8d5cc]">
-            <p className="text-[#8c6f66]">Пока нет загруженных фото. Будьте первыми!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {memories.map((m) => (
-              <div key={m.id} className="polaroid-card">
-                <img
-                  src={m.filePath}
-                  alt={m.caption || "Фото с торжества"}
-                  className="w-full h-48 sm:h-64 object-cover rounded-sm mb-2"
-                />
-                {m.caption && <p className="text-xs text-[#52413c] italic truncate">{m.caption}</p>}
-                {m.author && <p className="text-[10px] text-[#a6553a] font-semibold mt-1">От: {m.author}</p>}
+      {/* НОВЫЙ БЛОК: Локация, Карта и Трансфер */}
+      <section className="max-w-5xl mx-auto px-4 mb-20">
+        <h2 className="text-3xl font-serif text-gray-800 mb-8 flex items-center justify-center gap-3 text-center">
+          <MapPin className="w-8 h-8 text-[#c88a78]" />
+          Локация и Трансфер
+        </h2>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Инфо-блок */}
+          <div className="flex-1 bg-[#fdfbf7] p-8 rounded-3xl border border-[#f4e8e1] shadow-sm flex flex-col justify-center">
+            <h3 className="text-2xl font-serif font-bold text-gray-800 mb-4">Церемония и Банкет</h3>
+            <p className="text-gray-600 mb-6 text-lg">
+              Севастополь, Балаклава <br />
+              <span className="font-bold text-gray-800">Историческая локация у крепости Чембало</span>
+            </p>
+            
+            <div className="flex items-start gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <Car className="w-8 h-8 text-[#c88a78] flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-bold text-gray-800 mb-1">Организованный трансфер</h4>
+                <p className="text-sm text-gray-500">
+                  Для вашего удобства будет подан микроавтобус из центра Севастополя. 
+                  Сбор гостей на пл. Ушакова в 14:00.
+                </p>
               </div>
-            ))}
+            </div>
           </div>
-        )}
+          
+          {/* Яндекс Карта (Чембало) */}
+          <div className="flex-1 h-[350px] lg:h-auto rounded-3xl overflow-hidden border-4 border-white shadow-md relative bg-gray-200">
+            <iframe 
+              src="https://yandex.ru/map-widget/v1/?ll=33.599000%2C44.494000&z=15&pt=33.599000%2C44.494000~pm2rdm" 
+              width="100%" 
+              height="100%" 
+              frameBorder="0" 
+              className="absolute inset-0 w-full h-full object-cover"
+              title="Карта Балаклава Чембало"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
+      {/* Дресс-код */}
+      <section className="max-w-3xl mx-auto px-4 mb-20 text-center">
+        <h2 className="text-3xl font-serif text-gray-800 mb-6">Дресс-код</h2>
+        <p className="text-gray-600 mb-8">
+          Будем признательны, если вы поддержите цветовую гамму нашего праздника
+        </p>
+        <div className="flex justify-center gap-4 flex-wrap">
+          {["#E8DCC4", "#C88A78", "#A37A74", "#8B5A50", "#5C4033"].map((color, i) => (
+            <div 
+              key={i} 
+              className="w-12 h-12 md:w-16 md:h-16 rounded-full shadow-inner border border-black/5 transition-transform hover:scale-110"
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Переход в альбом */}
+      <section className="text-center px-4">
+        <Link 
+          href="/gallery" 
+          className="inline-flex items-center gap-2 bg-[#c88a78] text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-[#b57765] transition-all transform hover:scale-105 shadow-lg"
+        >
+          <Camera className="w-5 h-5" />
+          Смотреть фото гостей
+          <ArrowRight className="w-5 h-5" />
+        </Link>
       </section>
     </main>
   );
